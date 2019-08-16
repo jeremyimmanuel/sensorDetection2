@@ -64,6 +64,7 @@ public class ConnectRecorder extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mSocket.emit("leave recorder");
         mSocket.off("start record", onRecord);
     }
 }
