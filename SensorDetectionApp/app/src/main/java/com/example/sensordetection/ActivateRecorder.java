@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Toast;
 //import android.view.View;
 //import android.view.ViewGroup;
@@ -46,6 +47,9 @@ public class ActivateRecorder extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); //make it always portrait
         setContentView(R.layout.activity_activate_recorder);
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
 
         SensorApplication app = (SensorApplication) getApplication();
         mSocket = app.getSocket();
