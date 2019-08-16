@@ -27,7 +27,7 @@ def on_join_record(deviceName):
     global recordPopulation
     recordPopulation += 1
     emit('enable button', room='player')
-    emit("update recorder number", recordPopulation)
+    emit("update recorder number", recordPopulation, room='player')
     print(deviceName + ' recorder registered')
     print('total recorder: ', recordPopulation)
 
@@ -37,7 +37,7 @@ def on_leave_record():
     recordPopulation -= 1
     recordPopulation = recordPopulation if recordPopulation > 0 else 0
     leave_room('recorder')
-    emit("update recorder number", recordPopulation)
+    emit("update recorder number", recordPopulation, room='player')
     if recordPopulation == 0:
         emit('disable button', room='player')
     print('after leaving, recorder: ', recordPopulation)
@@ -48,7 +48,7 @@ def on_join_player(deviceName):
     join_room(room)
     global playerPopulation
     playerPopulation += 1
-    emit("update recorder number", recordPopulation)
+    emit("update recorder number", recordPopulation, room='player')
     print(deviceName + ' registered as player')
     print('total player: ', playerPopulation)
 

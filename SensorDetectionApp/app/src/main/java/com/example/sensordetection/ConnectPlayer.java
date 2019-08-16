@@ -17,6 +17,7 @@ public class ConnectPlayer extends AppCompatActivity {
 
     private Socket mSocket;
     Button startCollection;
+    TextView tv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +28,9 @@ public class ConnectPlayer extends AppCompatActivity {
 
         startCollection = findViewById(R.id.start_server_button);
         startCollection.setEnabled(false);
+
+        tv = findViewById(R.id.recNum);
+        tv.setText("0");
 
         SensorApplication app = (SensorApplication) getApplication();
         mSocket = app.getSocket();
@@ -60,8 +64,7 @@ public class ConnectPlayer extends AppCompatActivity {
         startCollection.setEnabled(false);
     }
 
-    private void updateNum(int num){
-        TextView tv = findViewById(R.id.recNum);
+    private void updateNum(String num){
         tv.setText(num);
     }
 
@@ -71,7 +74,7 @@ public class ConnectPlayer extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run(){
-                    int num = (int) args[0];
+                    String num = "" + args[0];
                     updateNum(num);
                 }
             });
@@ -121,6 +124,7 @@ public class ConnectPlayer extends AppCompatActivity {
         mSocket.off("start play", onPlay);
         mSocket.off("enable button", enableButton);
         mSocket.off("disable button", disableButton);
+        mSocket.off("update recorder number", updateRecNum);
     }
 
 
