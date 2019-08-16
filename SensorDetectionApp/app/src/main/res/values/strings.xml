@@ -14,4 +14,5 @@
     <string name="start_button">START</string>
     <string name="player_activation">Press play to start sound. Press stop to end process.</string>
     <string name="finish_recording">Recording Finished! :D</string>
+    <string name="num_recorders">Number of connected recorders:</string>
 </resources>

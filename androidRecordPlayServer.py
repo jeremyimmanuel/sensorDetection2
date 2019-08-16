@@ -27,8 +27,7 @@ def on_join_record(deviceName):
     global recordPopulation
     recordPopulation += 1
     emit('enable button', room='player')
-    #from ActivateRecorder.java (80-81); emits 'join recorder' with an argument of deviceName 
-    #deviceName = #what ever this is supposed to be
+    emit("update recorder number", recordPopulation)
     print(deviceName + ' recorder registered')
     print('total recorder: ', recordPopulation)
 
@@ -38,6 +37,7 @@ def on_leave_record():
     recordPopulation -= 1
     recordPopulation = recordPopulation if recordPopulation > 0 else 0
     leave_room('recorder')
+    emit("update recorder number", recordPopulation)
     if recordPopulation == 0:
         emit('disable button', room='player')
     print('after leaving, recorder: ', recordPopulation)
@@ -48,6 +48,7 @@ def on_join_player(deviceName):
     join_room(room)
     global playerPopulation
     playerPopulation += 1
+    emit("update recorder number", recordPopulation)
     print(deviceName + ' registered as player')
     print('total player: ', playerPopulation)
 

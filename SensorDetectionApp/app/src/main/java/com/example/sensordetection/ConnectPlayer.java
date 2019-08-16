@@ -35,6 +35,8 @@ public class ConnectPlayer extends AppCompatActivity {
         mSocket.emit("join player", deviceName);
         mSocket.emit("ask for button");
 
+        mSocket.on("update recorder number", updateRecNum);
+
         mSocket.on("enable button", enableButton);
         mSocket.on("disable button", disableButton);
     }
@@ -57,6 +59,24 @@ public class ConnectPlayer extends AppCompatActivity {
     private void disableStartButton(){
         startCollection.setEnabled(false);
     }
+
+    private void updateNum(int num){
+        TextView tv = findViewById(R.id.recNum);
+        tv.setText(num);
+    }
+
+    private Emitter.Listener updateRecNum = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run(){
+                    int num = (int) args[0];
+                    updateNum(num);
+                }
+            });
+        }
+    };
 
     private Emitter.Listener disableButton = new Emitter.Listener() {
         @Override
