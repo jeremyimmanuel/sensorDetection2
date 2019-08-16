@@ -1,5 +1,5 @@
 from flask import Flask, render_template
-from flask_socketio import SocketIO, send, emit, join_room, leave_room
+from flask_socketio import SocketIO, send, emit, join_room, leave_room, sockets
 import eventlet
 import eventlet.wsgi
 
@@ -62,6 +62,8 @@ def on_leave_player():
 @socketio.on('ask for button')
 def on_ask_for_button():
     global recordPopulation
+    room = socketio.sockets.adapter.rooms['recorder']
+    print(room)
     if recordPopulation > 0:
         emit('enable button', room='player')
 
