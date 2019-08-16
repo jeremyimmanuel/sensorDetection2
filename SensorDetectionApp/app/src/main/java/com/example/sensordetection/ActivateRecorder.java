@@ -127,6 +127,7 @@ public class ActivateRecorder extends AppCompatActivity {
         }
         Intent recorderIntent = new Intent(this, FinishRecording.class);
         startActivity(recorderIntent);
+        finish();
     }
 
     private Emitter.Listener onRecStop = new Emitter.Listener() {
