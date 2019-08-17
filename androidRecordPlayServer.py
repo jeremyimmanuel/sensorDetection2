@@ -4,19 +4,17 @@ import eventlet
 import eventlet.wsgi
 import datetime
 import os
-
-# import soundcard as sc
 import numpy as np
-# import waveflask
 from scipy.io.wavfile import read, write
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'testkey123'
 socketio = SocketIO(app)
-timeStamp = None
+timeStamp = None # time recorded when player tells recorders to start recording,
+# and used to make a new directory (name) for each experiment
 
-recordPopulation = 0
-playerPopulation = 0
+recordPopulation = 0    # number of recorders in the room
+playerPopulation = 0    # number of players in the room
 
 deviceArr = []
 
@@ -24,41 +22,54 @@ deviceArr = []
 def sessions():
     return render_template('session.html')
 
-@socketio.on('join recorder') # recieves a 'join recorder' event (emit) from android device
+# recieves a 'join recorder' event from android device
+# with the recorder device name (e.g. Lenovo)
+@socketio.on('join recorder')
 def on_join_record(deviceName):
     join_room('recorder')
     global recordPopulation
     recordPopulation += 1
+    
     emit('enable button', room='player')
     emit('update recorder number', recordPopulation, room='player')
-
+    
+    # shown on terminal that hosts the server by running this file
     print(deviceName + ' recorder registered')
     print('total recorder: ', recordPopulation)
 
+# recieves a 'leave recorder' event from android device
+# recorder device leaves the room and recorder population is updated
 @socketio.on('leave recorder')
 def on_leave_record():
     global recordPopulation
     recordPopulation -= 1
     recordPopulation = recordPopulation if recordPopulation > 0 else 0
+    
     leave_room('recorder')
     emit('update recorder number', recordPopulation, room='player')
-
+    
+    # disable 'start' button on player's screen if there is no recorder ready
+    # in the room
     if recordPopulation == 0:
         emit('disable button', room='player')
+    
     print('after leaving, recorder: ', recordPopulation)
 
+# recieves a 'join player' event from android device
+# with the player device name (e.g. Lenovo)
 @socketio.on('join player')
 def on_join_player(deviceName):
-    room = 'player'
-    join_room(room)
+    join_room('player')
     global playerPopulation
     playerPopulation += 1
-
+    
     emit('update recorder number', recordPopulation, room='player')
-
+    
     print(deviceName + ' registered as player')
     print('total player: ', playerPopulation)
 
+# receives a 'leave player' event from android device
+# player device leaves the room and player population is updated
 @socketio.on('leave player')
 def on_leave_player():
     global playerPopulation
@@ -67,15 +78,20 @@ def on_leave_player():
     leave_room('player')
     print('after leaving, player: ', playerPopulation)
 
+# receives an 'ask for button' event from android device
+# allows the 'start' button on player's screen if there's at least
+# one recorder ready in the room
 @socketio.on('ask for button')
 def on_ask_for_button():
     global recordPopulation
     if recordPopulation > 0:
         emit('enable button', room='player')
 
+# receives a 'start collection' event from android device and start recording
+# on all of connected recorder devices
 @socketio.on('start collection')
 def on_start_collection():
-    dt_obj= datetime.datetime.now() #make datetime object
+    dt_obj= datetime.datetime.now() # when the experiment is started
     global timeStamp
     timeStamp = str(dt_obj.year) + '_' + str(dt_obj.month) + '_' + str(dt_obj.day) + '_' + str(dt_obj.hour) + '_' + str(dt_obj.minute) + '_' + str(dt_obj.second)
     print('data collection started')
@@ -83,23 +99,29 @@ def on_start_collection():
     print('recording')
     emit('start play', room='player')
     print('playing')
-    os.mkdir('recordings_' + timeStamp) #make folder
+    os.mkdir('recordings_' + timeStamp) # make directory for this experiment
 
-
+# receives a 'stop collection' event from android device and stops recording
+# on all of connected recorder devices
 @socketio.on('stop collection')
 def on_stop_collection():
     emit('stop record', room='recorder')
     print('stop recording')
 
+# hey Brent! -from Anwar, Jeremy, and Donghee :D
 @socketio.on('hey waddup')
 def on_waduup():
     print('i\'m fine bro')
 
-
+# receives a 'Send File' event from android device along with
+# byteArr(recording files saved in recorder devicess transformed into a byte array)
+# and the unique deviceName of the recorder (a portion of FINGERPRINT)
 @socketio.on('Send File')
 def convert_file_to_wav(byteArr, deviceName):
     global timeStamp
     fileName = deviceName.split(".")[0] +".wav"
+    
+    # saves in a directory for this experiment
     filePath = "recordings_" + timeStamp + '/' + fileName
     print(filePath)
     with open(filePath, "wb") as binary_file:
@@ -110,7 +132,3 @@ def convert_file_to_wav(byteArr, deviceName):
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, host='0.0.0.0', port=8090)
-#    app = socketio.Middleware(socketio, app)
-#    eventlet.wsgi.server(eventlet.listen(('', 8090)), app)
-
-
