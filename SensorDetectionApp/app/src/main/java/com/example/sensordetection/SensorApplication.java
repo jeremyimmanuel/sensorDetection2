@@ -3,7 +3,6 @@ package com.example.sensordetection;
 import android.app.Application;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
-
 import java.net.URISyntaxException;
 
 public class SensorApplication extends Application {

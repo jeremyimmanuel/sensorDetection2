@@ -1,35 +1,19 @@
 package com.example.sensordetection;
 
-import android.Manifest;
-//import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
-import android.view.View;
 import android.view.WindowManager;
-import android.widget.Toast;
-//import android.view.View;
-//import android.view.ViewGroup;
-//import android.widget.Button;
-//import android.widget.LinearLayout;
 import com.github.nkzawa.emitter.Emitter;
-import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
-
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -52,11 +36,10 @@ public class ActivateRecorder extends AppCompatActivity {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-
         SensorApplication app = (SensorApplication) getApplication();
         mSocket = app.getSocket();
 
-
+        // gets filename and sets save location in string filename
         fileName = getExternalCacheDir().getAbsolutePath();
         timestamp = new SimpleDateFormat("yyyyMMddHHmmss'.3gp'").format(new Date());
         fileName += "/audiorecordtest_";
@@ -106,7 +89,6 @@ public class ActivateRecorder extends AppCompatActivity {
             try {
                 recorder.stop();
             } catch (RuntimeException stopException) {
-//                recording_file.delete();
                 recorder.reset();
                 return;
             }
@@ -116,7 +98,7 @@ public class ActivateRecorder extends AppCompatActivity {
 
         }
 
-        String deviceName = "" ;
+        String deviceName ;
         String fp = android.os.Build.FINGERPRINT;
         String[] fp_arr = fp.split("/");
         deviceName = fp_arr[4];
@@ -125,7 +107,7 @@ public class ActivateRecorder extends AppCompatActivity {
         deviceName += "_" + timestamp;
 
 
-        //convert file to bytearray
+        //convert audio file to byte array
         try {
             File fileToSend = new File(fileName);
             byte[] byteArr = getBytes(fileToSend);
@@ -148,7 +130,6 @@ public class ActivateRecorder extends AppCompatActivity {
                     stopRecording();
                 }
             });
-
         }
     };
 
@@ -160,14 +141,11 @@ public class ActivateRecorder extends AppCompatActivity {
             recorder.release();
             recorder = null;
         }
-
         if (player != null) {
             player.release();
             player = null;
         }
-
         mSocket.off("stop record", onRecStop);
     }
-
 
 }
