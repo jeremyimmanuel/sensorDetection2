@@ -19,6 +19,7 @@ public class ConnectRecorder extends AppCompatActivity {
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
     private String [] permissions = {Manifest.permission.RECORD_AUDIO};
 
+    // request recording permission
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -36,6 +37,7 @@ public class ConnectRecorder extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); //make it always portrait
         setContentView(R.layout.activity_connect_recorder);
 
+        // keeps screen from sleeping to prevent disconnect
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         SensorApplication app = (SensorApplication) getApplication();
@@ -46,16 +48,21 @@ public class ConnectRecorder extends AppCompatActivity {
 
         String deviceName = android.os.Build.MODEL;
 
+        // tell server this phone is a recorder
         mSocket.emit("join recorder", deviceName);
+
+        // listen for start record event from player
         mSocket.on("start record", onRecord);
     }
 
     private void letsRecord() {
+        // stops listening to start record
         mSocket.off("start record", onRecord);
         Intent recorderIntent = new Intent(this, ActivateRecorder.class);
         startActivity(recorderIntent);
     }
 
+    // emitter listener to start recording
     private Emitter.Listener onRecord = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
