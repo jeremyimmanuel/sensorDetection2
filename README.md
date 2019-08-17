@@ -6,6 +6,6 @@ The app is an implementation of a flask and flask-socketio in Python as the serv
 
 This app was in collaboration with Anwar Aminuddin and Donghee lee
 
-Check their github repo at:
-https://github.com/heedong0612
-https://github.com/anwara96
+Check their github repo at:<br>
+https://github.com/heedong0612 <br>
+https://github.com/anwara96 <br>
