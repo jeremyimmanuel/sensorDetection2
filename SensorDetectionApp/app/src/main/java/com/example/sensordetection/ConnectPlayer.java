@@ -10,13 +10,12 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.github.nkzawa.emitter.Emitter;
-import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 
-public class ConnectPlayer extends AppCompatActivity {
+public class ConnectPlayer extends AppCompatActivity { //everyone does this
 
     private Socket mSocket;
-    Button startCollection;
+    Button startCollection; //button
     TextView tv;
 
     @Override
@@ -29,20 +28,20 @@ public class ConnectPlayer extends AppCompatActivity {
         startCollection = findViewById(R.id.start_server_button);
         startCollection.setEnabled(false);
 
-        tv = findViewById(R.id.recNum);
-        tv.setText("0");
+        tv = findViewById(R.id.recNum); //connect to textView
+        tv.setText("0");    //at start set number to 0
 
-        SensorApplication app = (SensorApplication) getApplication();
-        mSocket = app.getSocket();
+        SensorApplication app = (SensorApplication) getApplication(); // initiate app as SensorApplication
+        mSocket = app.getSocket(); // get global socket
 
         String deviceName = android.os.Build.MODEL;
-        mSocket.emit("join player", deviceName);
+        mSocket.emit("join player", deviceName); //send device name to server to print in server terminal
         mSocket.emit("ask for button");
 
-        mSocket.on("update recorder number", updateRecNum);
+        mSocket.on("update recorder number", updateRecNum); // socket now listens to "update recorder number"
 
-        mSocket.on("enable button", enableButton);
-        mSocket.on("disable button", disableButton);
+        mSocket.on("enable button", enableButton);  // socket now listens to "enable button"
+        mSocket.on("disable button", disableButton); // socket now listens to "disable button"
     }
 
     public void startProcess(View view){
@@ -51,7 +50,7 @@ public class ConnectPlayer extends AppCompatActivity {
     }
 
     private void letsPlay() {
-        mSocket.off("start play", onPlay);
+        mSocket.off("start play", onPlay); //stops listening to event "start play"
         Intent playerIntent = new Intent(this, ActivatePlayer.class);
         startActivity(playerIntent);
     }
@@ -69,18 +68,20 @@ public class ConnectPlayer extends AppCompatActivity {
         tv.invalidate();
     }
 
+    //on event "update recorder number"
     private Emitter.Listener updateRecNum = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run(){
-                    updateNum("" + args[0]);
+                    updateNum("" + args[0]); // args is the argument passed from server
                 }
             });
         }
     };
 
+    //on event "disable button"
     private Emitter.Listener disableButton = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
@@ -93,6 +94,7 @@ public class ConnectPlayer extends AppCompatActivity {
         }
     };
 
+    //on event "enable button"
     private Emitter.Listener enableButton = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
@@ -105,6 +107,7 @@ public class ConnectPlayer extends AppCompatActivity {
         }
     };
 
+    //on event "start play"
     private Emitter.Listener onPlay = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
@@ -118,7 +121,7 @@ public class ConnectPlayer extends AppCompatActivity {
     };
 
     @Override
-    protected void onDestroy() {
+    protected void onDestroy() { //when back button is pressed or finished() is called; maybe?
         super.onDestroy();
         mSocket.emit("leave player");
         mSocket.off("start play", onPlay);
@@ -126,6 +129,4 @@ public class ConnectPlayer extends AppCompatActivity {
         mSocket.off("disable button", disableButton);
         mSocket.off("update recorder number", updateRecNum);
     }
-
-
 }
