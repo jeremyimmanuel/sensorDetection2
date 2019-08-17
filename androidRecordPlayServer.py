@@ -1,11 +1,13 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO, send, emit, join_room, leave_room
 import eventlet
-import eventlet.wsgi
+import eventlet.wsgi #flask uses it, makes it secure
 import datetime
 import os
-import numpy as np
-from scipy.io.wavfile import read, write
+#import numpy as np
+#from scipy.io.wavfile import read, write
+
+#we need socket to make real time and supaaaa fastttttttt vroom vroom
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'testkey123'
@@ -18,7 +20,7 @@ playerPopulation = 0    # number of players in the room
 
 deviceArr = []
 
-@app.route('/')
+@app.route('/') #we definately need this
 def sessions():
     return render_template('session.html')
 
@@ -119,16 +121,17 @@ def on_waduup():
 @socketio.on('Send File')
 def convert_file_to_wav(byteArr, deviceName):
     global timeStamp
-    fileName = deviceName.split(".")[0] +".wav"
+    fileName = deviceName.split(".")[0] +".wav" #get name by getting rid of '.3gp'
     
     # saves in a directory for this experiment
     filePath = "recordings_" + timeStamp + '/' + fileName
     print(filePath)
     with open(filePath, "wb") as binary_file:
         # Write text or bytes to the file
-        binary_file.write("".encode('utf8'))
+        binary_file.write("".encode('utf8')) #don't added any string to the empty string, it will added that string to whateevver file you writing onto 
         num_bytes_written = binary_file.write(byteArr)
     print("Wrote %d bytes." % num_bytes_written)
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True, host='0.0.0.0', port=8090)
+    socketio.run(app, debug=True, host='0.0.0.0', port=8090) #we definately need this
+    #0.0.0.0 means listening to any device that submits to that port
