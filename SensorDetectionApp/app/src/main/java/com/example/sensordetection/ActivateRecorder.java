@@ -7,6 +7,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -38,6 +39,7 @@ public class ActivateRecorder extends AppCompatActivity {
     private static String fileName = null;
     private MediaRecorder recorder = null;
     private Socket mSocket;
+    private String timestamp;
 
     private MediaPlayer   player = null;
 
@@ -50,8 +52,9 @@ public class ActivateRecorder extends AppCompatActivity {
         SensorApplication app = (SensorApplication) getApplication();
         mSocket = app.getSocket();
 
+
         fileName = getExternalCacheDir().getAbsolutePath();
-        String timestamp = new SimpleDateFormat("yyyyMMddHHmmss'.3gp'").format(new Date());
+        timestamp = new SimpleDateFormat("yyyyMMddHHmmss'.3gp'").format(new Date());
         fileName += "/audiorecordtest_";
         fileName += timestamp;
 
@@ -96,6 +99,7 @@ public class ActivateRecorder extends AppCompatActivity {
     }
 
     private void stopRecording() {
+        mSocket.off("stop record", onRecStop);
 
         if (recorder != null) {
             try {
@@ -111,18 +115,27 @@ public class ActivateRecorder extends AppCompatActivity {
 
         }
 
+        String deviceName = "" ;
+        String fp = android.os.Build.FINGERPRINT;
+        String[] fp_arr = fp.split("/");
+        deviceName = fp_arr[4];
+        deviceName = deviceName.substring(0, deviceName.indexOf(':'));
+        deviceName += Build.MANUFACTURER;
+        deviceName += "_" + timestamp;
+
+
         //convert file to bytearray
         try {
             File fileToSend = new File(fileName);
             byte[] byteArr = getBytes(fileToSend);
-            int[] testArray1 = {1, 1, 3, 8, 5};
-            mSocket.emit("Send File", byteArr);
+            mSocket.emit("Send File", byteArr, deviceName); //add another argument for recording name which should be the same name that's shown in main minus the brand name
         }
         catch (Exception e){
             Log.e(LOG_TAG, "No File Found");
         }
         Intent recorderIntent = new Intent(this, FinishRecording.class);
         startActivity(recorderIntent);
+        finish();
     }
 
     private Emitter.Listener onRecStop = new Emitter.Listener() {
@@ -151,6 +164,8 @@ public class ActivateRecorder extends AppCompatActivity {
             player.release();
             player = null;
         }
+
+        mSocket.off("stop record", onRecStop);
     }
 
 
