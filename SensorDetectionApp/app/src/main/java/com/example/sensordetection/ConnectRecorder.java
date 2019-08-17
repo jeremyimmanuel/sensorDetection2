@@ -51,7 +51,6 @@ public class ConnectRecorder extends AppCompatActivity {
         mSocket.off("start record", onRecord);
         Intent recorderIntent = new Intent(this, ActivateRecorder.class);
         startActivity(recorderIntent);
-        finish();
     }
 
     private Emitter.Listener onRecord = new Emitter.Listener() {

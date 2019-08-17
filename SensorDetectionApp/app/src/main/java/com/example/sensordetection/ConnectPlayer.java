@@ -54,7 +54,6 @@ public class ConnectPlayer extends AppCompatActivity {
         mSocket.off("start play", onPlay);
         Intent playerIntent = new Intent(this, ActivatePlayer.class);
         startActivity(playerIntent);
-        finish();
     }
 
     private void enableStartButton(){
