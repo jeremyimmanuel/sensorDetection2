@@ -60,9 +60,6 @@ public class ActivateRecorder extends AppCompatActivity {
         fileName += timestamp;
 
         startRecording();
-        //String deviceName = android.os.Build.MODEL;     // added 08/12
-        //mSocket.emit("join recorder"); //args will be device name, research how to get device name from android
-        //mSocket.on("start record", onStart);
 
     }
 

@@ -67,6 +67,7 @@ public class ConnectPlayer extends AppCompatActivity {
 
     private void updateNum(String num){
         tv.setText(num);
+        tv.invalidate();
     }
 
     private Emitter.Listener updateRecNum = new Emitter.Listener() {
@@ -75,8 +76,7 @@ public class ConnectPlayer extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run(){
-                    String num = "" + args[0];
-                    updateNum(num);
+                    updateNum("" + args[0]);
                 }
             });
         }
