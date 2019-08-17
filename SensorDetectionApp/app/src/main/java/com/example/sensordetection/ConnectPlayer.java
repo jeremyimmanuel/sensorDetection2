@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -16,14 +17,20 @@ public class ConnectPlayer extends AppCompatActivity {
 
     private Socket mSocket;
     Button startCollection;
+    TextView tv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); //make it always portrait
         setContentView(R.layout.activity_connect_player);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         startCollection = findViewById(R.id.start_server_button);
         startCollection.setEnabled(false);
+
+        tv = findViewById(R.id.recNum);
+        tv.setText("0");
 
         SensorApplication app = (SensorApplication) getApplication();
         mSocket = app.getSocket();
@@ -31,6 +38,8 @@ public class ConnectPlayer extends AppCompatActivity {
         String deviceName = android.os.Build.MODEL;
         mSocket.emit("join player", deviceName);
         mSocket.emit("ask for button");
+
+        mSocket.on("update recorder number", updateRecNum);
 
         mSocket.on("enable button", enableButton);
         mSocket.on("disable button", disableButton);
@@ -45,6 +54,7 @@ public class ConnectPlayer extends AppCompatActivity {
         mSocket.off("start play", onPlay);
         Intent playerIntent = new Intent(this, ActivatePlayer.class);
         startActivity(playerIntent);
+        finish();
     }
 
     private void enableStartButton(){
@@ -54,6 +64,23 @@ public class ConnectPlayer extends AppCompatActivity {
     private void disableStartButton(){
         startCollection.setEnabled(false);
     }
+
+    private void updateNum(String num){
+        tv.setText(num);
+        tv.invalidate();
+    }
+
+    private Emitter.Listener updateRecNum = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run(){
+                    updateNum("" + args[0]);
+                }
+            });
+        }
+    };
 
     private Emitter.Listener disableButton = new Emitter.Listener() {
         @Override
@@ -98,6 +125,7 @@ public class ConnectPlayer extends AppCompatActivity {
         mSocket.off("start play", onPlay);
         mSocket.off("enable button", enableButton);
         mSocket.off("disable button", disableButton);
+        mSocket.off("update recorder number", updateRecNum);
     }
 
 

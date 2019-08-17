@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.view.WindowManager;
+
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.Socket;
 
@@ -35,6 +37,8 @@ public class ConnectRecorder extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); //make it always portrait
         setContentView(R.layout.activity_connect_recorder);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         SensorApplication app = (SensorApplication) getApplication();
         mSocket = app.getSocket();
         ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
@@ -47,6 +51,7 @@ public class ConnectRecorder extends AppCompatActivity {
         mSocket.off("start record", onRecord);
         Intent recorderIntent = new Intent(this, ActivateRecorder.class);
         startActivity(recorderIntent);
+        finish();
     }
 
     private Emitter.Listener onRecord = new Emitter.Listener() {

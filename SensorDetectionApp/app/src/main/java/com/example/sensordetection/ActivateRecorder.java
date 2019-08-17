@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Toast;
 //import android.view.View;
 //import android.view.ViewGroup;
@@ -49,6 +50,9 @@ public class ActivateRecorder extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); //make it always portrait
         setContentView(R.layout.activity_activate_recorder);
 
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+
         SensorApplication app = (SensorApplication) getApplication();
         mSocket = app.getSocket();
 
@@ -59,9 +63,6 @@ public class ActivateRecorder extends AppCompatActivity {
         fileName += timestamp;
 
         startRecording();
-        //String deviceName = android.os.Build.MODEL;     // added 08/12
-        //mSocket.emit("join recorder"); //args will be device name, research how to get device name from android
-        //mSocket.on("start record", onStart);
 
     }
 

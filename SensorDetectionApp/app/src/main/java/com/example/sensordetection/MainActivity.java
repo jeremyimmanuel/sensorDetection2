@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,7 +22,6 @@ public class MainActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); //to make it start on portrait
 
         setContentView(R.layout.activity_main);
-        //setContentView(R.layout.disable_android_orientation_change);
 
         //Update device name here
         TextView textView = (TextView) findViewById(R.id.deviceNameTitle);
