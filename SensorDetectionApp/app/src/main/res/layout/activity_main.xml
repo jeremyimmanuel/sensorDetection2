@@ -50,12 +50,12 @@
         android:lineSpacingExtra="8sp"
         android:text="@string/choose_type"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/button_player"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.571"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.269" />
+        app:layout_constraintVertical_bias="0.699" />
 
     <TextView
         android:id="@+id/textView3"
@@ -84,11 +84,11 @@
         android:layout_marginBottom="8dp"
         android:text="Device Name Here"
         android:textSize="30sp"
-        app:layout_constraintBottom_toTopOf="@+id/button_player"
+        app:layout_constraintBottom_toTopOf="@+id/textView2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.406" />
+        app:layout_constraintVertical_bias="0.875" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
