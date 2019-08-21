@@ -22,11 +22,19 @@ https://github.com/anwara96 <br>
 https://github.com/socketio/socket.io-client-java
 
 # Instruction
-## Server
+## Setup
+### Server
 1. Check your ip address, put it on a note
 2. Run androidRecordPlayServer.py on a computer
 
-## Client
+### Client
 1. Run android studio and open 'SensorDetectionApp'  
 2. Go to app/java/Constants
 3. Change the ip address to the noted ip address 
+
+### Execution
+1. Open all devices that's installed with the app
+2. You're going to have two options; PLAYER or RECORDER
+3. There can only be <b>ONE</b> PLAYER at a time 
+4. Set one device to be PLAYER and the rest to be
+...
