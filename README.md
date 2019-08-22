@@ -36,5 +36,5 @@ https://github.com/socketio/socket.io-client-java
 1. Open all devices that's installed with the app
 2. You're going to have two options; PLAYER or RECORDER
 3. There can only be <b>ONE</b> PLAYER at a time 
-4. Set one device to be PLAYER and the rest to be
-...
+4. Set one device to be PLAYER and the rest to be RECORDER
+
