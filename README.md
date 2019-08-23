@@ -41,3 +41,8 @@ https://github.com/socketio/socket.io-client-java
 6. Press start button on PLAYER, RECORDER will show 'recording' page and <b>start recording</b>
 7. To stop recording, press the <b>stop</b> button on PLAYER
 8. All recording will be saved in a folder in the directory of the python server.
+
+# Future
+1. Setup GUI for server
+2. Make a Desktop, iOS client?
+3. Give client ability to set server address
