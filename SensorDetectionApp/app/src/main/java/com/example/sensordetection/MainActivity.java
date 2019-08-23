@@ -6,10 +6,22 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class MainActivity extends AppCompatActivity {
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
+
+import java.net.URISyntaxException;
+
+public class MainActivity extends AppCompatActivity
+{
+    private Socket mSocket;
+    private EditText urlInput;
+    private Button connectButton;
+    private Button playerRecorderButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,15 +31,13 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        //Update device name here
-        TextView textView = (TextView) findViewById(R.id.deviceNameTitle);
-        String deviceName;
-        String fp = android.os.Build.FINGERPRINT;
-        String[] fp_arr = fp.split("/");
-        deviceName = fp_arr[4];
-        deviceName = deviceName.substring(0, deviceName.indexOf(':'));
-        deviceName = Build.MANUFACTURER + "\n" + deviceName;
-        textView.setText(deviceName); //set text for text view
+        //SensorApplication app = (SensorApplication) getApplication();
+        //mSocket = app.getSocket();
+
+        urlInput = (EditText) findViewById(R.id.insertURL);
+        connectButton = (Button) findViewById(R.id.connectServerButton);
+        playerRecorderButton = (Button) findViewById(R.id.playerRecorderButton);
+        playerRecorderButton.setEnabled(false);
 
         if (android.os.Build.VERSION.SDK_INT > 9)
         {
@@ -37,14 +47,31 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void choosePlayer(View view){
-        Intent playerIntent = new Intent(this, ConnectPlayer.class);
-        startActivity(playerIntent);
+    public void connectServer(View view){
+        String url = urlInput.getText().toString();
+        System.out.println(url);
+        SensorApplication app = (SensorApplication) getApplication();
+        app.connectServer(url);
+        mSocket = app.getSocket();
+        mSocket.emit("hey waddup");
+
+        connectButton.setEnabled(false);
+        playerRecorderButton.setEnabled(true);
+
+        //go to ChoosePlayerRecorder page
+        //Intent playerIntent = new Intent(this, ChoosePlayerRecorder.class);
+        //startActivity(playerIntent);
     }
 
-    public void chooseRecorder(View view){
-        Intent recorderIntent = new Intent(this, ConnectRecorder.class);
-        startActivity(recorderIntent);
+    public void clearField(View v)
+    {
+        urlInput.setText("");
+    }
+
+    public void choosePlayerRecorder(View v)
+    {
+        Intent playerIntent = new Intent(this, ChoosePlayerRecorder.class);
+        startActivity(playerIntent);
     }
 
 }
