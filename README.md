@@ -38,6 +38,6 @@ https://github.com/socketio/socket.io-client-java
 3. There can only be <b>ONE</b> PLAYER at a time 
 4. Set one device to be PLAYER and the rest to be RECORDER
 5. Connect PLAYER first, then all the RECORDERs
-6. Press start button on PLAYER, RECORDER will show 'recording' page and <b> start recording <b>
+6. Press start button on PLAYER, RECORDER will show 'recording' page and <b>start recording</b>
 7. To stop recording, press the <b>stop</b> button on PLAYER
 8. All recording will be saved in a folder in the directory of the python server.
