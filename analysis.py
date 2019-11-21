@@ -1,5 +1,6 @@
 import subprocess
 import math
+import pyshark
 
 # Generate the byte stream of 60 seconds
 def generate_array_of_byte_in_video(videoFile):
@@ -74,16 +75,33 @@ def generate_array_of_inputs_per_windowSize(cap, inputs, analysis_time, windowSi
         return inputscount
 
 
+def generate_array_of_inputs_per_windowSize2( cap):
+    inputsCount = [0] * 60
+    for pkt in cap:
+        if math.floor(float(pkt.time)) < 60:
+            inputsCount[math.floor(float(pkt.time))] += int(pkt.length)
+    return inputsCount
+
 def main():
-    jerWav = generate_array_of_byte_in_video('jeremyRecording.wav') # attacker package
-    dongWav = generate_array_of_byte_in_video('dongheeRecording.wav') # protector wav
+    # jerWav = generate_array_of_byte_in_video('jeremyRecording.wav') # attacker package
+    #   attcap = pyshark.FileCapture(attackerCap,only_summaries=True,keep_packets = False)
+
+    attcap = pyshark.FileCapture('Test1=10,20,30,40,50,60.pcapng',only_summaries=True,keep_packets = False)
+    attarr2 = generate_array_of_inputs_per_windowSize2(attcap) # protector wav
+
+
+    jojocap = pyshark.FileCapture('jojo.pcapng', only_summaries=True, keep_packets = False)
+    jojoArr = generate_array_of_inputs_per_windowSize2(jojocap)
+
+    # generate_array_of_inputs_per_windowSize('Test1=10,20,30,40,50,60.pcapng', "packets", 60, 2)
+
     
-    generate_array_of_inputs_per_windowSize(jerWav, 'packets', 60, 2)
+    print("attarr2 : \n")
+    print(attarr2)
     
-    print(jerWav)
-    print(dongWav)
-    
-    print('bruh')
+    print("jojoArr : \n")
+    print(jojoArr)
+
 
 if __name__ == '__main__':
     main()
