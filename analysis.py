@@ -97,6 +97,8 @@ def normalizeArr(arr: list):
 
     return norm_arr
         
+
+ # later, one byte array will be from a .wav file, and the other one from pcap file       
 def compareByteArrays(arr1: list, arr2: list, threshold: float) -> bool :
     
     # normalize the given byte arrays
@@ -132,7 +134,7 @@ def main():
     print("hi")
 
     if (compareByteArrays(attarr2, jojoArr, 1.0)):
-        print("they are similar!")
+        print("they are similar! They might be spying..")
     else :
         print("they aren't similar!")
         
