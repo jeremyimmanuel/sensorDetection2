@@ -82,10 +82,102 @@ def generate_array_of_inputs_per_windowSize2( cap):
             inputsCount[math.floor(float(pkt.time))] += int(pkt.length)
     return inputsCount
 
+#def calculate_cross_correlation(self,windowSize,inputType):
+#    print ('start cross correlation:: Window Size:', windowSize," ms")
+#
+#    analysis_time = 60  #60 seconds
+#    cap = pyshark.FileCapture(self.newFile,only_summaries=True,keep_packets = False)
+#    testCapWindows = self.generate_array_of_inputs_per_windowSize(cap,inputType,analysis_time, windowSize)
+#
+#    flash_pattern = [0]*len(testCapWindows)
+#    # test files from camera contained the flash numbers
+#    if '=' in self.newFile:
+#        flash = self.newFile[self.newFile.index('=')+1:]
+#        fl = []
+#        x = 0
+#        for i in range(1, len(flash)):
+#            if flash[i] == ',' or flash[i] == '.':
+#                fl.append(int(flash[x:i]))
+#                x = (i+1)
+#
+#    # test files generated from non-signal, create dummy peak for testing data
+#    else:
+#        print ('no input time soecific, use auto-gen time slot')
+#        fl = [5,14,23,32,41,50,59]
+#
+#for i in range(len(flash_pattern)):
+#    if i in fl:
+#        flash_pattern[i] = 1
+#        print ('time of interaction::')
+#        print (fl)
+#
+#        #NORMALIZES based on sd
+#        std = np.std(testCapWindows)
+#        if self.USE_MEDIAN:
+#            valbase = np.median(testCapWindows)
+#    else:
+#        valbase = np.mean(testCapWindows)
+#
+#        if self.FILTER_TROUGHS:
+#            print ('-----------filtering the troughs---------------')
+#            for i, val in enumerate(testCapWindows):
+#                if val < (valbase - self.trough_mult * std):
+#                    testCapWindows[i] = valbase
+#
+#if self.FILTER_PEAK:
+#    print ('-----------filtering the peaks---------------')
+#    for i, val in enumerate(testCapWindows):
+#        if val > (valbase + self.trough_mult * std):
+#            testCapWindows[i] = max(testCapWindows)
+#
+#        if (max(testCapWindows) - min(testCapWindows)) != 0:
+#            normalized_data = [round((input-min(testCapWindows))/float((max(testCapWindows) - min(testCapWindows))),5)
+#                               for input in testCapWindows]
+#        else:
+#            print ('ERROR::::Array does not contain any input data')
+#            print ('::Correlation Coefficient:: N/A \n')
+#            return 'N/A'
+#
+#        # plt.figure()
+#        # plt.plot([v for v in xrange(len(normalized_data))], normalized_data,'r')
+#        # plt.xlim(0, len(normalized_data) - 1)
+#        # plt.title('Bits / s')
+#        # plt.show()
+#
+#
+#        print ('::Correlation Coefficient:: \n',np.corrcoef(flash_pattern,normalized_data)[0][1])
+#        return np.corrcoef(flash_pattern,normalized_data)[0][1]
+
+    
+# normalize arr
+def normalizeArr(arr: list):
+    arrSize = 0
+    #count up all the bytes 
+    for byteSize in arr:
+        arrSize += byteSize
+    
+    #divide each element in array by the size
+    for i in range(len(arr)):
+        arr[i] = arr[i] / arrSize
+
+    return arr
+        
+def compareByteArrays(arr1: list, arr2: list, threshold: float) -> bool :
+    
+    # normalize the given byte arrays
+    norm_arr1 = normalizeArr(arr1)
+    norm_arr2 = normalizeArr(arr2)
+
+    # compare the arrays considering the threshold (for now 1.0)
+    # returns true if all byteSize in arrays are "close enough"
+    for i in range(len(arr1)):
+        if (abs(arr1[i] - arr2[i]) > threshold) :
+            return false
+
 def main():
     # jerWav = generate_array_of_byte_in_video('jeremyRecording.wav') # attacker package
     #   attcap = pyshark.FileCapture(attackerCap,only_summaries=True,keep_packets = False)
-
+    
     attcap = pyshark.FileCapture('Test1=10,20,30,40,50,60.pcapng',only_summaries=True,keep_packets = False)
     attarr2 = generate_array_of_inputs_per_windowSize2(attcap) # protector wav
 
@@ -102,6 +194,10 @@ def main():
     print("jojoArr : \n")
     print(jojoArr)
 
-
+    if (compareByteArrays(attarr2, jojoArr, 1.0)):
+        print("they are similar!")
+    else :
+        print("they aren't similar!")
+        
 if __name__ == '__main__':
     main()
