@@ -59,6 +59,7 @@ public class ActivateRecorder extends AppCompatActivity {
 
         // test if recorder successfully created
         try {
+            recorder.setMaxDuration(60000);
             recorder.prepare();
         } catch (IOException e) {
             Log.e(LOG_TAG, "recorder prepare() failed");

@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 import com.github.nkzawa.socketio.client.Socket;
+import java.util.concurrent.TimeUnit;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -24,6 +25,14 @@ public class ActivatePlayer extends AppCompatActivity {
 
         SensorApplication app = (SensorApplication) getApplication();   //get app
         mSocket = app.getSocket();      //get socket
+
+        try {
+            TimeUnit.SECONDS.sleep(60);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        mSocket.emit("stop collection");
+
     }
 
     //this function is connected to the 'Play' button
