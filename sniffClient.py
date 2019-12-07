@@ -1,5 +1,10 @@
 import pyshark
 import analysis as brenti
+from flask import Flask
+from flask_socketio import SocketIO, send, emit, join_room, leave_room
+import eventlet
+import eventlet.wsgi
+
 import socketio
 
 sio = socketio.Client()
@@ -12,8 +17,7 @@ def sniffy():
     cap.sniff(timeout = 60)
     print("end of sniffy")
 
-    analysis()
-
+   
 @sio.on('do analysis')
 def analysis(filename):
     print('at analysis')

@@ -4,13 +4,18 @@ import eventlet
 import eventlet.wsgi #flask uses it, makes it secure
 import datetime
 import os
-
 import subprocess
 import math
+from _thread import *
+import threading
+import pyshark
+import analysis as brenti
+from threading import Thread
 #import numpy as np
-#from scipy.io.wavfile import read, write
+#from scipy.io.pcapfile import read, write
 
 #we need socket to make real time and supaaaa fastttttttt vroom vroom
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'testkey123'
@@ -105,6 +110,7 @@ def on_start_collection():
     emit('start play', room='player')
     print('playing')
     os.mkdir('recordings_' + timeStamp) # make directory for this experiment
+    
 
 # receives a 'stop collection' event from android device and stops recording
 # on all of connected recorder devices
@@ -122,20 +128,26 @@ def on_waduup():
 # byteArr(recording files saved in recorder devicess transformed into a byte array)
 # and the unique deviceName of the recorder (a portion of FINGERPRINT)
 @socketio.on('Send File')
-def convert_file_to_wav(byteArr, deviceName):
+def convert_file_to_pcap(byteArr, deviceName):
     global timeStamp
-    fileName = deviceName.split(".")[0] +".wav" #get name by getting rid of '.3gp'
-    
+    fileName = deviceName.split(".")[0] +".pcap" #get name by getting rid of '.3gp'
+    # fileName = "recordingFromPhone.pcap"
     # saves in a directory for this experiment
     filePath = "recordings_" + timeStamp + '/' + fileName
     print(filePath)
-    with open(filePath, "wb") as binary_file:
+    with open(fileName, "wb") as binary_file:
         # Write text or bytes to the file
         binary_file.write("".encode('utf8')) #don't added any string to the empty string, it will added that string to whateevver file you writing onto 
         num_bytes_written = binary_file.write(byteArr)
     print("Wrote %d bytes." % num_bytes_written)
+    emit('do analysis', fileName)
+    analysis(fileName)
+
+
+    
 
 if __name__ == '__main__':
+    
     socketio.run(app, debug=True, host='0.0.0.0', port=8090) #we definately need this
     #0.0.0.0 means listening to any device that submits to that port
 
