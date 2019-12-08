@@ -4,19 +4,26 @@ import socketio
 
 sio = socketio.Client()
 
-@sio.on('start collection')
-def sniffy():
+@sio.event
+def connect():
+    print("I'm connected!")
+    sio.emit('hey waddup')
+
+@sio.on('start sniffing')
+def sniffy(_):
     print('sniffing... :)')
     #Read all the packets from jojo.pcap and filter it by the connection port i used (8090)
     cap = pyshark.LiveCapture(interface = 'en0', display_filter='tcp.port eq 8090', output_file="/Users/jzhenmbp/Desktop/School/research/sensorDetection2/packetFromPhone.pcap")
     cap.sniff(timeout = 60)
     print("end of sniffy")
 
-    analysis()
+    #analysis()
 
 @sio.on('do analysis')
 def analysis(filename):
     print('at analysis')
+    print(filename)
+    
     cap1 = pyshark.FileCapture(filename,only_summaries=True,keep_packets = False)
     array1 = brenti.generate_array_of_inputs_per_windowSize2(cap1) # protector wav
 
@@ -29,6 +36,9 @@ def analysis(filename):
     else:
         print("not similar")
 
+@sio.on('testMessage')
+def func(_):
+    print('test message recieved')
 
 if __name__ == "__main__":
-    sio.connect('http://localhost:8090')
+    sio.connect('http://192.168.0.54:8090')

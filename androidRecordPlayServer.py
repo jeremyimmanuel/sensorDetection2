@@ -101,6 +101,9 @@ def on_ask_for_button():
 # on all of connected recorder devices
 @socketio.on('start collection')
 def on_start_collection():
+    
+    emit('start sniffing') # send broadcast to sniffer
+    emit('testMessage') # this doesn't work :s
     dt_obj= datetime.datetime.now() # when the experiment is started
     global timeStamp
     timeStamp = str(dt_obj.year) + '_' + str(dt_obj.month) + '_' + str(dt_obj.day) + '_' + str(dt_obj.hour) + '_' + str(dt_obj.minute) + '_' + str(dt_obj.second)
@@ -123,6 +126,7 @@ def on_stop_collection():
 @socketio.on('hey waddup')
 def on_waduup():
     print('i\'m fine bro')
+    #emit('testMessage') # this works, go to on_start_collection for other emit testMessage
 
 # receives a 'Send File' event from android device along with
 # byteArr(recording files saved in recorder devicess transformed into a byte array)
@@ -140,8 +144,9 @@ def convert_file_to_pcap(byteArr, deviceName):
         binary_file.write("".encode('utf8')) #don't added any string to the empty string, it will added that string to whateevver file you writing onto 
         num_bytes_written = binary_file.write(byteArr)
     print("Wrote %d bytes." % num_bytes_written)
+    
     emit('do analysis', fileName)
-    analysis(fileName)
+    #analysis(fileName)
 
 
     
