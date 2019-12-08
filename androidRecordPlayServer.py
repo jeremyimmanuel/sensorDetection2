@@ -32,10 +32,12 @@ deviceArr = []
 def sessions():
     return render_template('session.html')
 
-# recieves a 'join recorder' event from android device
-# with the recorder device name (e.g. Lenovo)
 @socketio.on('join recorder')
 def on_join_record(deviceName):
+    '''
+    recieves a 'join recorder' event from android device
+    with the recorder device name (e.g. Lenovo)
+    '''
     join_room('recorder')
     global recordPopulation
     recordPopulation += 1
@@ -47,10 +49,13 @@ def on_join_record(deviceName):
     print(deviceName + ' recorder registered')
     print('total recorder: ', recordPopulation)
 
-# recieves a 'leave recorder' event from android device
-# recorder device leaves the room and recorder population is updated
+
 @socketio.on('leave recorder')
 def on_leave_record():
+    '''
+    recieves a 'leave recorder' event from android device
+    recorder device leaves the room and recorder population is updated
+    '''
     global recordPopulation
     recordPopulation -= 1
     recordPopulation = recordPopulation if recordPopulation > 0 else 0
@@ -65,10 +70,13 @@ def on_leave_record():
     
     print('after leaving, recorder: ', recordPopulation)
 
-# recieves a 'join player' event from android device
-# with the player device name (e.g. Lenovo)
+
 @socketio.on('join player')
 def on_join_player(deviceName):
+    '''
+    recieves a 'join player' event from android device
+    with the player device name (e.g. Lenovo)
+    '''
     join_room('player')
     global playerPopulation
     playerPopulation += 1
@@ -78,32 +86,48 @@ def on_join_player(deviceName):
     print(deviceName + ' registered as player')
     print('total player: ', playerPopulation)
 
-# receives a 'leave player' event from android device
-# player device leaves the room and player population is updated
+
 @socketio.on('leave player')
 def on_leave_player():
+    '''
+    receives a 'leave player' event from android device
+    player device leaves the room and player population is updated
+    '''
     global playerPopulation
     playerPopulation -= 1
     playerPopulation = playerPopulation if playerPopulation > 0 else 0
     leave_room('player')
     print('after leaving, player: ', playerPopulation)
 
-# receives an 'ask for button' event from android device
-# allows the 'start' button on player's screen if there's at least
-# one recorder ready in the room
+
 @socketio.on('ask for button')
 def on_ask_for_button():
+    '''
+    receives an 'ask for button' event from android device
+    allows the 'start' button on player's screen if there's at least
+    one recorder ready in the room
+    '''
     global recordPopulation
     if recordPopulation > 0:
         emit('enable button', room='player')
 
-# receives a 'start collection' event from android device and start recording
-# on all of connected recorder devices
+@socketio.on('join sniffer')
+def on_join_sniffer():
+    '''
+    receive a join sniffer event from the sniffer script
+    '''
+    print('sniffer joined')
+    join_room('sniffer')
+
+
 @socketio.on('start collection')
 def on_start_collection():
+    '''
+    receives a 'start collection' event from android device and start recording
+    on all of connected recorder devices
+    '''
+    emit('start sniffing', room = 'sniffer') # send broadcast to sniffer
     
-    emit('start sniffing') # send broadcast to sniffer
-    emit('testMessage') # this doesn't work :s
     dt_obj= datetime.datetime.now() # when the experiment is started
     global timeStamp
     timeStamp = str(dt_obj.year) + '_' + str(dt_obj.month) + '_' + str(dt_obj.day) + '_' + str(dt_obj.hour) + '_' + str(dt_obj.minute) + '_' + str(dt_obj.second)
@@ -145,7 +169,7 @@ def convert_file_to_pcap(byteArr, deviceName):
         num_bytes_written = binary_file.write(byteArr)
     print("Wrote %d bytes." % num_bytes_written)
     
-    emit('do analysis', fileName)
+    emit('do analysis', fileName, room = 'sniffer')
     #analysis(fileName)
 
 
