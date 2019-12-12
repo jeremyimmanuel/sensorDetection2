@@ -10,6 +10,7 @@ from _thread import *
 import threading
 import pyshark
 import analysis as brenti
+from time import sleep
 from threading import Thread
 #import numpy as np
 #from scipy.io.pcapfile import read, write
@@ -169,6 +170,7 @@ def convert_file_to_pcap(byteArr, deviceName):
         num_bytes_written = binary_file.write(byteArr)
     print("Wrote %d bytes." % num_bytes_written)
     
+    sleep(10)
     emit('do analysis', fileName, room = 'sniffer')
     #analysis(fileName)
 

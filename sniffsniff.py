@@ -1,6 +1,7 @@
 import pyshark
 import analysis as brenti
 import socketio
+import asyncio
 
 sio = socketio.Client()
 
@@ -17,10 +18,11 @@ def sniffy(_):
     print('sniffing... :)')
     #Read all the packets from jojo.pcap and filter it by the connection port i used (8090)
     cap = pyshark.LiveCapture(interface = 'en0', display_filter='tcp.port eq 8090', output_file="packetFromPhone.pcap")
-    cap.sniff(timeout = 60)
+    print('cap object created')
+    asyncio.wait_for(cap.sniff(timeout = 60), timeout = None)
     print("end of sniffy")
 
-    #analysis()
+    # analysis()
 
 @sio.on('do analysis')
 def analysis(filename):
@@ -44,4 +46,4 @@ def func(_):
     print('test message recieved')
 
 if __name__ == "__main__":
-    sio.connect('http://192.168.0.54:8090')
+    sio.connect('http://10.156.9.160:8090')
