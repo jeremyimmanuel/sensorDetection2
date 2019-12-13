@@ -1,49 +1,74 @@
 import pyshark
-import analysis as brenti
-import socketio
-import asyncio
+import sys, os
 
-sio = socketio.Client()
 
-@sio.event
-def connect():
+def sniffy():
     '''
-    When successfully connected to the server
+    Version 1
+    filename = "pcapSniff.pcap"
+    File name to save the pcap file in.
+    Live capture from wireless and port 8090, and store in a file
+    cap = pyshark.LiveCapture(interface = 'en0', display_filter='tcp.port eq 8090', output_file=filename)
+    FIXME : for some reason captured packets are not saved in
+    
+    -------
+    
+    Version 2 - Captures the packets and then go through all the packets and extract all the playloads
+    and then write out to a txt file.
     '''
-    print("I'm connected!")
-    sio.emit('join sniffer')
+    
+    filename = "pcapSniff.txt"
+    cap = pyshark.LiveCapture(interface = 'en0', display_filter='tcp.port eq 8090')
+    f = open(filename, 'w')
+    print('sniffing...')
+    cap.sniff(timeout = 5) #5 second for quick testing
+    print(cap)
 
-@sio.on('start sniffing')
-def sniffy(_):
-    print('sniffing... :)')
-    #Read all the packets from jojo.pcap and filter it by the connection port i used (8090)
-    cap = pyshark.LiveCapture(interface = 'en0', display_filter='tcp.port eq 8090', output_file="packetFromPhone.pcap")
-    print('cap object created')
-    asyncio.wait_for(cap.sniff(timeout = 60), timeout = None)
+    # Go through the captured packets and only write out the payloads
+    for pkt in cap:
+        try:
+            if pkt.tcp != None: 
+                if pkt.tcp.payload != None:
+                    a = pkt.tcp.payload
+                    f.write(a)
+      
+        except AttributeError:
+            pass
+
+    print("we here")
+    f.close()
     print("end of sniffy")
+
+
+if __name__ == "__main__":
+    sniffy()
+
+
+#Junks
+    # cap.set_debug(True)
+    # print('cap object created')
+    # cap.sniff(timeout = 60)
+    
+    # print(cap)
+    # cap.close()
+    # output.close()
 
     # analysis()
 
-@sio.on('do analysis')
-def analysis(filename):
-    print('at analysis')
-    print('filename is: %s' % filename)
+# def analysis(filename):
+#     print('at analysis')
+#     print('filename is: %s' % filename)
 
-    cap1 = pyshark.FileCapture(filename,only_summaries=True,keep_packets = False)
-    array1 = brenti.generate_array_of_inputs_per_windowSize2(cap1) # protector wav
+#     cap1 = pyshark.FileCapture(filename,only_summaries=True,keep_packets = False)
+#     array1 = brenti.generate_array_of_inputs_per_windowSize2(cap1) # protector wav
 
-    cap2 = pyshark.FileCapture('packetFromPhone.pcap', only_summaries=True, keep_packets = False)
-    array2 = brenti.generate_array_of_inputs_per_windowSize2(cap2)
+#     cap2 = pyshark.FileCapture('packetFromPhone.pcap', only_summaries=True, keep_packets = False)
+#     array2 = brenti.generate_array_of_inputs_per_windowSize2(cap2)
 
 
-    if(brenti.compareByteArrays(array1,array2,1.0)):
-        print("similar")
-    else:
-        print("not similar")
+#     if(brenti.compareByteArrays(array1,array2,1.0)):
+#         print("similar")
+#     else:
+#         print("not similar")
 
-@sio.on('testMessage')
-def func(_):
-    print('test message recieved')
-
-if __name__ == "__main__":
-    sio.connect('http://10.156.9.160:8090')
+# os.execlp('python', 'python', 'analysis.py', 'recording.wav') 

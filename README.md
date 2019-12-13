@@ -4,18 +4,21 @@ This app was used as a data collection method for a research project led by Dr. 
 
 The app is an implementation of a flask and flask-socketio in Python as the server while having multiple android apps as clients which was written in Java
 
-This app was in collaboration with Anwar Aminuddin and Donghee lee
+Contributors: Anwar Aminuddin, Jun Zhen, Donghee Lee, Jeremy Tandjung
 
 Check their github repo at:<br>
 https://github.com/jeremyimmanuel <br>
 https://github.com/heedong0612 <br>
 https://github.com/anwara96 <br>
+https://github.com/jpzhen <br>
 
 # Dependencies 
 ## Python
 * flask
 * flask-socketio
 * evenlet 
+* pyshark
+* tshark 
 
 # Citation
 * Nkazawa socket io client for java
@@ -41,8 +44,11 @@ https://github.com/socketio/socket.io-client-java
 6. Press start button on PLAYER, RECORDER will show 'recording' page and <b>start recording</b>
 7. To stop recording, press the <b>stop</b> button on PLAYER
 8. All recording will be saved in a folder in the directory of the python server.
+9. sniffsniff.py will be executed along with the recording in sync, producing a pcapSniff.txt
+10. Server will also run analysis.py to compare audio recording and pcapSniff
+11. Server will output if the bytearrays are similar or not
 
-# Future
+# Future 
 1. Setup GUI for server
 2. Make a Desktop, iOS client?
 3. Give client ability to set server address
