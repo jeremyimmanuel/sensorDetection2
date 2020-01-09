@@ -17,27 +17,32 @@ def sniffy():
     and then write out to a txt file.
     '''
     
-    filename = "pcapSniff.txt"
-    cap = pyshark.LiveCapture(interface = 'en0', display_filter='tcp.port eq 8090')
-    f = open(filename, 'w')
-    print('sniffing...')
-    cap.sniff(timeout = 5) #5 second for quick testing
-    print(cap)
-
-    # Go through the captured packets and only write out the payloads
-    for pkt in cap:
-        try:
-            if pkt.tcp != None: 
-                if pkt.tcp.payload != None:
-                    a = pkt.tcp.payload
-                    f.write(a)
-      
-        except AttributeError:
-            pass
-
-    print("we here")
-    f.close()
-    print("end of sniffy")
+    
+    print('cap object created')
+    cap = pyshark.LiveCapture(interface = 'en0', display_filter='tcp.port eq 8090', output_file='livecap.pcap')
+    cap.sniff(timeout = 60)
+    
+#    filename = "pcapSniff.txt"
+#    cap = pyshark.LiveCapture(interface = 'en0', display_filter='tcp.port eq 8090')
+#    f = open(filename, 'w')
+#    print('sniffing...')
+#    cap.sniff(timeout = 5) #5 second for quick testing
+#    print(cap)
+#
+#    # Go through the captured packets and only write out the payloads
+#    for pkt in cap:
+#        try:
+#            if pkt.tcp != None:
+#                if pkt.tcp.payload != None:
+#                    a = pkt.tcp.payload
+#                    f.write(a)
+#
+#        except AttributeError:
+#            pass
+#
+#    print("we here")
+#    f.close()
+#    print("end of sniffy")
 
 
 if __name__ == "__main__":
