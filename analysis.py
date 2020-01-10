@@ -88,7 +88,7 @@ def compareByteArrays(arr1: list, arr2: list, threshold: float) -> bool :
 
     # compare the arrays considering the threshold (for now 1.0)
     # returns true if all byteSize in arrays are "similar"
-    for i in range(len(arr1)):
+    for i in range(len(60)):
         if (abs(arr1[i] - arr2[i]) > threshold) :
             return False
 
@@ -108,7 +108,7 @@ def analysis(filename: str):
     # array1 = generate_array_of_inputs_per_windowSize2(cap1) # protector wav
     # cap1.close() 
 
-    testFile = open('pcapFromPhone.txt', 'r') # hardcoded -- sniffed text file
+    testFile = open('livecap.pcap', 'r') # hardcoded -- sniffed text file
     array2 = str.encode(testFile.read()) # converts to byte array
     testFile.close()
 

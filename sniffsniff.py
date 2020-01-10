@@ -16,12 +16,29 @@ def sniffy():
     Version 2 - Captures the packets and then go through all the packets and extract all the playloads
     and then write out to a txt file.
     '''
-    
-    
+
+    # display_filter='tcp.port eq 80',s
+    filename = 'livecap.pcap'
     print('cap object created')
-    cap = pyshark.LiveCapture(interface = 'en0', display_filter='tcp.port eq 8090', output_file='livecap.pcap')
+    cap = pyshark.LiveCapture(interface = 'en0', display_filter='tcp.port eq 8090', output_file=filename)
     cap.sniff(timeout = 60)
+
+    os.system('./pcapfix -o ' + filename + ' ' + filename)
     
+    # filename = 'livecap2.pcap'
+    print('at analysis')
+    print('filename is: %s' % filename)
+    # cap1 = pyshark.FileCapture(filename)
+    # for pkt in cap1:
+    #    try:
+    #        if pkt.tcp != None:
+    #            if pkt.tcp.payload != None:
+    #                print(pkt.tcp.payload)
+
+    #    except AttributeError:
+    #        pass
+
+
 #    filename = "pcapSniff.txt"
 #    cap = pyshark.LiveCapture(interface = 'en0', display_filter='tcp.port eq 8090')
 #    f = open(filename, 'w')
