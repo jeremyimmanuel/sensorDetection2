@@ -3,6 +3,7 @@ package com.example.sensordetection;
 import android.content.pm.ActivityInfo;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -26,13 +27,19 @@ public class ActivatePlayer extends AppCompatActivity {
         SensorApplication app = (SensorApplication) getApplication();   //get app
         mSocket = app.getSocket();      //get socket
 
-        try {
-            TimeUnit.SECONDS.sleep(60);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        mSocket.emit("stop collection");
+//        try {
+//            TimeUnit.SECONDS.sleep(60);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mSocket.emit("stop collection");
+            }
+        }, 60000);
     }
 
     //this function is connected to the 'Play' button
