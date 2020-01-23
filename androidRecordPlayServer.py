@@ -151,8 +151,6 @@ def on_stop_collection():
     '''
     emit('stop record', room='recorder')
     print('stop recording')
-
-
 # hey Brent! -from Anwar, Jeremy, Donghee & Jun :D
 # easter egg
 @socketio.on('hey waddup')
@@ -179,10 +177,10 @@ def convert_file_to_wav(byteArr, deviceName):
         num_bytes_written = binary_file.write(byteArr)
     print("Wrote %d bytes." % num_bytes_written)
     
-    sleep(10)
-    pid = os.fork()
-    if pid == 0:
-        os.execlp('python', 'python', 'analysis.py', fileName)
+    # sleep(10)
+    # pid = os.fork()
+    # if pid == 0:
+    #     os.execlp('python', 'python', 'analysis.py', fileName)
 
 
 if __name__ == '__main__':

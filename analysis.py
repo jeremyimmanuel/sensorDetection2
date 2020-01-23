@@ -3,6 +3,45 @@ import math
 import pyshark
 import sys
 
+import numpy as np
+from scipy.stats import entropy
+#from dit.divergences import jensen_shannon_divergence
+import time 
+import glob 
+from datetime import datetime
+
+
+# Generate the byte stream of 60 seconds 
+def generate_array_of_byte_in_video(videoFile):
+    print ('Start decode the video file. ')
+    setTime = 60
+    decodedByteArray = [0] * setTime
+    curser = 0
+    frameCount = 0
+    command = ['ffprobe', '-show_entries', 'frame=pkt_size,pkt_pts_time', videoFile]
+    p = subprocess.Popen(command, stdout=subprocess.PIPE)
+    decodedFrames = p.stdout.read().decode('utf-8')
+    retcode = p.wait()
+    
+    while True:
+        if decodedFrames.find('pts_time', curser) == -1:
+            print ('Finish decoding ' + videoFile +' for:: ' + str(setTime) + 's')
+            break
+    
+        frameTime = decodedFrames[decodedFrames.find('pts_time', curser) + 9 :decodedFrames.find('pkt_size', curser) - 1]
+        frameSize = decodedFrames[decodedFrames.find('pkt_size', curser) + 9 :decodedFrames.find('[/FRAME]', curser) - 1]
+        
+        #print ("------------------------------"+ frameTime + 's:'+frameSize)
+        
+        frameCount += 1
+        #print ('frame '+str(frameCount) + '===================\ntime = <'+frameTime + '>')
+        #print ('size = <'+frameSize + '>')
+        if math.floor(float(frameTime)) <= 59:
+            decodedByteArray[math.floor(float(frameTime))] += int(frameSize)
+        curser = decodedFrames.find('[/FRAME]', curser) + 8
+        #print ('curser loaction '+str(curser))
+    return decodedByteArray
+
 def generate_array_of_inputs_per_windowSize(cap, inputs, analysis_time, windowSize):
     """
     cap is the captured package with pyshark
@@ -88,10 +127,9 @@ def compareByteArrays(arr1: list, arr2: list, threshold: float) -> bool :
 
     # compare the arrays considering the threshold (for now 1.0)
     # returns true if all byteSize in arrays are "similar"
-    for i in range(len(60)):
+    for i in range(60):
         if (abs(arr1[i] - arr2[i]) > threshold) :
             return False
-
     return True
 
 def analysis(filename: str):
@@ -100,17 +138,24 @@ def analysis(filename: str):
     '''
     print('Analyzing...')
     print('filename is: %s' % filename)
-    with open(filename, "rb") as binary_file:  
-        array1 = binary_file.read()  # Read the whole file at once
+    # with open(filename, "rb") as binary_file:  
+    #     array1 = binary_file.read()  # Read the whole file at once
+
+    array1 = generate_array_of_byte_in_video(filename) # attacker package
+    
 
     # cap1 = pyshark.FileCapture(filename,only_summaries=True,keep_packets = False)
     # cap1.set_debug()
     # array1 = generate_array_of_inputs_per_windowSize2(cap1) # protector wav
     # cap1.close() 
 
-    testFile = open('livecap.pcap', 'r') # hardcoded -- sniffed text file
-    array2 = str.encode(testFile.read()) # converts to byte array
-    testFile.close()
+    # testFile = open('livecap.pcap', 'r') # hardcoded -- sniffed text file
+    # array2 = str.encode(testFile.read()) # converts to byte array
+    # testFile.close()
+
+    testFile = pyshark.FileCapture('livecap.pcap', only_summaries=True, keep_packets = False)
+    array2 = generate_array_of_inputs_per_windowSize2(testFile)
+
 
     # Compares two byte arrays and determine whether they're similar
     if(compareByteArrays(array1,array2,1.0)):
@@ -126,60 +171,31 @@ if __name__ == '__main__':
 # Functions we're not using anymore, but leaving it for reference for now
 
 # def main():
-    # jerWav = generate_array_of_byte_in_video('jeremyRecording.wav') # attacker package
-    #   attcap = pyshark.FileCapture(attackerCap,only_summaries=True,keep_packets = False)
+#     jerWav = generate_array_of_byte_in_video('jeremyRecording.wav') # attacker package
+#       attcap = pyshark.FileCapture(attackerCap,only_summaries=True,keep_packets = False)
     
-    # attcap = pyshark.FileCapture('Test1=10,20,30,40,50,60.pcapng',only_summaries=True,keep_packets = False)
-    # attarr2 = generate_array_of_inputs_per_windowSize2(attcap) # protector wav
+#     attcap = pyshark.FileCapture('Test1=10,20,30,40,50,60.pcapng',only_summaries=True,keep_packets = False)
+#     attarr2 = generate_array_of_inputs_per_windowSize2(attcap) # protector wav
 
 
-    # jojocap = pyshark.FileCapture('jojo.pcapng', only_summaries=True, keep_packets = False)
-    # jojoArr = generate_array_of_inputs_per_windowSize2(jojocap)
+#     jojocap = pyshark.FileCapture('jojo.pcapng', only_summaries=True, keep_packets = False)
+#     jojoArr = generate_array_of_inputs_per_windowSize2(jojocap)
 
-    # # generate_array_of_inputs_per_windowSize('Test1=10,20,30,40,50,60.pcapng', "packets", 60, 2)
+#     # generate_array_of_inputs_per_windowSize('Test1=10,20,30,40,50,60.pcapng', "packets", 60, 2)
 
     
-    # print("attarr2 : \n")
-    # print(attarr2)
+#     print("attarr2 : \n")
+#     print(attarr2)
     
-    # print("jojoArr : \n")
-    # print(jojoArr)
-    # print("hi")
+#     print("jojoArr : \n")
+#     print(jojoArr)
+#     print("hi")
 
-    # if (compareByteArrays(attarr2, jojoArr, 1.0)):
-    #     print("they are similar! They might be spying..")
-    # else :
-    #     print("they aren't similar!")
+#     if (compareByteArrays(attarr2, jojoArr, 1.0)):
+#         print("they are similar! They might be spying..")
+#     else :
+#         print("they aren't similar!")
 
 
-# Generate the byte stream of 60 seconds 
-# def generate_array_of_byte_in_video(videoFile):
-#     print ('Start decode the video file. ')
-#     setTime = 60
-#     decodedByteArray = [0] * setTime
-#     curser = 0
-#     frameCount = 0
-#     command = ['ffprobe', '-show_entries', 'frame=pkt_size,pkt_pts_time', videoFile]
-#     p = subprocess.Popen(command, stdout=subprocess.PIPE)
-#     decodedFrames = p.stdout.read().decode('utf-8')
-#     retcode = p.wait()
-    
-#     while True:
-#         if decodedFrames.find('pts_time', curser) == -1:
-#             print ('Finish decoding ' + videoFile +' for:: ' + str(setTime) + 's')
-#             break
-    
-#         frameTime = decodedFrames[decodedFrames.find('pts_time', curser) + 9 :decodedFrames.find('pkt_size', curser) - 1]
-#         frameSize = decodedFrames[decodedFrames.find('pkt_size', curser) + 9 :decodedFrames.find('[/FRAME]', curser) - 1]
-        
-#         #print ("------------------------------"+ frameTime + 's:'+frameSize)
-        
-#         frameCount += 1
-#         #print ('frame '+str(frameCount) + '===================\ntime = <'+frameTime + '>')
-#         #print ('size = <'+frameSize + '>')
-#         if math.floor(float(frameTime)) <= 59:
-#             decodedByteArray[math.floor(float(frameTime))] += int(frameSize)
-#         curser = decodedFrames.find('[/FRAME]', curser) + 8
-#         #print ('curser loaction '+str(curser))
-#     return decodedByteArray
+
 #    
