@@ -23,15 +23,14 @@ def sniffy():
     cap = pyshark.LiveCapture(interface = 'en0', bpf_filter='ip.addr == 10.156.7.37', output_file=filename)
     cap.sniff(timeout = 60)
 
-    os.system('./pcapfix -o ' + filename + ' ' + filename)
+    os.system('./pcapfix-1.1.4/pcapfix -o ' + filename + ' ' + filename)
     
     # filename = 'livecap2.pcap'
     print('at analysis')
     print('filename is: %s' % filename)
 
-    pid = os.fork()
-    if pid == 0:
-        os.execlp('python', 'python', 'analysis.py', 'recording.wav')
+    time.sleep(10)
+    os.execlp('python', 'python', 'analysis.py', 'recording.wav')
 
     # cap1 = pyshark.FileCapture(filename)
     # for pkt in cap1:

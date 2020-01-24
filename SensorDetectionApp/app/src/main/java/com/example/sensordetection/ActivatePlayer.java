@@ -68,6 +68,7 @@ public class ActivatePlayer extends AppCompatActivity {
     public void stop(View v) {
         stopPlayer();
         mSocket.emit("stop collection");
+        finish();
     }
 
     //this function stops the whole process; recording audio in other phones
