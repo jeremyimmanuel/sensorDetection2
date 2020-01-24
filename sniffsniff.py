@@ -23,7 +23,7 @@ def sniffy():
     cap = pyshark.LiveCapture(interface = 'en0', bpf_filter='ip.addr == 10.156.7.37', output_file=filename)
     cap.sniff(timeout = 60)
 
-    os.system('./pcapfix -o ' + filename + ' ' + filename)
+    os.system('./Pcapfix/pcapfix -o ' + filename + ' ' + filename)
     
     # filename = 'livecap2.pcap'
     print('at analysis')
