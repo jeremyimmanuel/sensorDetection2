@@ -166,10 +166,10 @@ def convert_file_to_wav(byteArr, deviceName):
     '''
     
     global timeStamp
-    fileName = deviceName.split(".")[0] +".wav"
+    # fileName = deviceName.split(".")[0] +".wav"
     # saves in a directory for this experiment
-    filePath = "recordings_" + timeStamp + '/' + fileName
-    print(filePath)
+    # filePath = "recordings_" + timeStamp + '/' + fileName
+    # print(filePath)
     fileName = 'recording.wav'
     with open(fileName, "wb") as binary_file:
         # Write text or bytes to the file
