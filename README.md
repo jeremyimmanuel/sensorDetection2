@@ -19,10 +19,14 @@ https://github.com/jpzhen <br>
 * evenlet 
 * pyshark
 * tshark 
+## Others
+* pcapfix
 
 # Citation
 * Nkazawa socket io client for java
 https://github.com/socketio/socket.io-client-java
+* pcapfix by f00l.de
+https://f00l.de/pcapfix/
 
 # Instruction
 ## Setup
