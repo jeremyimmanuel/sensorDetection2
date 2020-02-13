@@ -27,19 +27,13 @@ public class ActivatePlayer extends AppCompatActivity {
         SensorApplication app = (SensorApplication) getApplication();   //get app
         mSocket = app.getSocket();      //get socket
 
-//        try {
-//            TimeUnit.SECONDS.sleep(60);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 mSocket.emit("stop collection");
             }
-        }, 60000);
+        }, 55000);
     }
 
     //this function is connected to the 'Play' button
