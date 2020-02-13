@@ -16,13 +16,13 @@ def sniffy():
     Version 2 - Captures the packets and then go through all the packets and extract all the playloads
     and then write out to a txt file.
     '''
-    # display_filter='tcp.port eq 80',s
-    time.sleep(58)
+    # display_filter='tcp.port eq 80'
     filename = 'livecap.pcap'
     print('cap object created')
-    cap = pyshark.LiveCapture(interface = 'en0', bpf_filter='ip.addr == 10.156.7.37', output_file=filename)
+    cap = pyshark.LiveCapture(interface = 'en0', output_file=filename) # bpf_filter='ip.addr == 10.156.7.37'
     cap.sniff(timeout = 60)
 
+    # overwrite pcap file
     os.system('./pcapfix-1.1.4/pcapfix -o ' + filename + ' ' + filename)
     
     # filename = 'livecap2.pcap'
@@ -31,6 +31,13 @@ def sniffy():
 
     time.sleep(10)
     os.execlp('python', 'python', 'analysis.py', 'recording.wav')
+
+
+if __name__ == "__main__":
+    sniffy()
+
+
+#Junks
 
     # cap1 = pyshark.FileCapture(filename)
     # for pkt in cap1:
@@ -65,12 +72,6 @@ def sniffy():
 #    f.close()
 #    print("end of sniffy")
 
-
-if __name__ == "__main__":
-    sniffy()
-
-
-#Junks
     # cap.set_debug(True)
     # print('cap object created')
     # cap.sniff(timeout = 60)

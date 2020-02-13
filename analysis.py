@@ -136,6 +136,8 @@ def analysis(filename: str):
     '''
     String filename is the name of the file to be analyzed
     '''
+    ipBins = {}
+
     print('Analyzing...')
     print('filename is: %s' % filename)
     # with open(filename, "rb") as binary_file:  
@@ -153,15 +155,28 @@ def analysis(filename: str):
     # array2 = str.encode(testFile.read()) # converts to byte array
     # testFile.close()
 
-    testFile = pyshark.FileCapture('livecap.pcap', only_summaries=True, keep_packets = False)
-    array2 = generate_array_of_inputs_per_windowSize2(testFile)
+    
+    cap = pyshark.FileCapture('livecap.pcap', only_summaries=True, keep_packets = False)
+    for packet in cap:
+        ip = packet.source
+        if(ip in ipBins.keys()):
+            #add to ip bin
+            ipBins[ip] = [packet]
+        else: # ip is already in dic
+            ipBins[ip].append(packet)
+
+    for ip in ipBins.keys():
+        array2 = generate_array_of_inputs_per_windowSize2(ipBins[ip])
+        if(compareByteArrays(array1,array2,1.0)):
+            print("Analysis: Similar")
+            print(ip + "is a spy")
+        else:
+            print("Analysis: Not similar")
+            print(ip + "is not a spy")
 
 
     # Compares two byte arrays and determine whether they're similar
-    if(compareByteArrays(array1,array2,1.0)):
-        print("Analysis: Similar")
-    else:
-        print("Analysis: Not similar")
+    
 
 if __name__ == '__main__':
     analysis(sys.argv[1])
