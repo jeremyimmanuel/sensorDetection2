@@ -2,7 +2,68 @@ import pyshark
 import sys, os
 import time
 
-def sniffy():
+ANALYSIS_SIZE = 60  # we will analyze results after 60 seconds
+BIN_SIZE = 1000  # we go to a new bin every 1000 milliseconds
+
+start_time = None
+
+packet_sizes = list()
+src_dict = dict()
+
+new_dict = dict()
+
+count = 0
+
+def packetHandler(pkt):
+    global start_time
+    global count
+    try:
+ #       source = str(pkt.ip.src)   # we won't get source IP addresses in monitor mode because of encryption
+        source = str(pkt.wlan.sa)
+        length = pkt.length
+        timestamp = pkt.sniff_timestamp
+        # print (str(timestamp) + ': ' + source + ' sent ' + str(length) + ' bytes')
+#        print (source)
+#        print (str(length))
+#        print (str(timestamp))
+        # add new data to the appropriate source
+        t = (timestamp, length)
+        if source in src_dict:
+            src_dict[source].append(t) # src_dict[source] + length
+        else:
+            src_dict[source] = [t]#length
+        
+        # print(count)
+        # count+=1
+        # print(src_dict[source])
+
+        #TODO:   Add source data to the appropriate time bin
+
+
+    except Exception as e:
+#        print(type(e))  
+        return 
+
+# refactor packet array  
+def refactor(arr):
+    start = float(arr[0][0]) #get earliest time
+    curr = 1
+    newDict = {}
+
+    for p in arr:
+        if float(p[0]) < start + curr:
+            if(curr in newDict.keys()):
+                newDict[curr] += int(p[1])
+            else:
+                newDict[curr] = int(p[1])
+        else:
+            start += 1
+            curr += 1
+    return newDict
+
+
+def sniffy(mon_iface, channel):
+    global start_time
     '''
     Version 1
     filename = "pcapSniff.pcap"
@@ -18,24 +79,50 @@ def sniffy():
     '''
     # display_filter='tcp.port eq 80'
     filename = 'livecap.pcap'
-    print('cap object created')
-    cap = pyshark.LiveCapture(interface = 'en0', output_file=filename) # bpf_filter='ip.addr == 10.156.7.37'
-    cap.sniff(timeout = 60)
+
+
+#    set channel
+    os.system("iwconfig " + mon_iface + " channel " + str(channel) + " > /dev/null 2>&1")
+    print('set channel')
+    time.sleep(1)
+    # while True:
+    # t_end = time.time() + 0.5
+    # while time.time() < t_end:
+    print('capturing...')
+    capture = pyshark.LiveCapture(interface = mon_iface)
+    # capture.sniff(timeout=1)
+    try:
+        capture.apply_on_packets(packetHandler, timeout=5)
+    except:
+        print("done capturing")
+    start_time = time.time() * 1000   #get start time in milliseconds
+
+#    cap.sniff(timeout = 60)
+
 
     # overwrite pcap file
-    os.system('./pcapfix-1.1.4/pcapfix -o ' + filename + ' ' + filename)
+    # os.system('./pcapfix-1.1.4/pcapfix -o ' + filename + ' ' + filename)
     
-    # filename = 'livecap2.pcap'
-    print('at analysis')
-    print('filename is: %s' % filename)
+    # # filename = 'livecap2.pcap'
+    # print('at analysis')
+    # print('filename is: %s' % filename)
 
-    time.sleep(10)
-    os.execlp('python', 'python', 'analysis.py', 'recording.wav')
+    # time.sleep(10)
+    # os.execlp('python', 'python', 'analysis.py', 'recording.wav')
 
 
 if __name__ == "__main__":
-    sniffy()
+    if len(sys.argv) != 3:
+        print('sniffysniffy.py networkInterface channel')
+        sys.exit()
+    sniffy(sys.argv[1], int(sys.argv[2]))
+    # print(src_dict)
 
+    
+    for k in src_dict.keys():
+        new_dict[k] = refactor(src_dict[k])
+
+    print(new_dict)
 
 #Junks
 
