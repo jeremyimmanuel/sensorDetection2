@@ -1,6 +1,7 @@
 import pyshark
 import sys, os
 import time
+import analysis
 
 ANALYSIS_SIZE = 60  # we will analyze results after 60 seconds
 BIN_SIZE = 1000  # we go to a new bin every 1000 milliseconds
@@ -46,12 +47,15 @@ def packetHandler(pkt):
 
 # refactor packet array  
 def refactor(arr):
-    start = float(arr[0][0]) #get earliest time
+    start = float(arr[0][0]) #get earliest time #0.7
     curr = 1
     newDict = {}
 
     for p in arr:
-        if float(p[0]) < start + curr:
+        begInterval = float(p[0]) #0.36
+        endInterval = start + curr #0.36 + 0.5 = 0.61 0.86 
+        # print(("begin interval %s, end interval %s") % (begInterval, endInterval))
+        if begInterval < endInterval:
             if(curr in newDict.keys()):
                 newDict[curr] += int(p[1])
             else:
@@ -59,10 +63,15 @@ def refactor(arr):
         else:
             start += 1
             curr += 1
+            if(curr in newDict.keys()):
+                newDict[curr] += int(p[1])
+            else:
+                newDict[curr] = int(p[1])
     return newDict
 
 
 def sniffy(mon_iface, channel):
+    print("in sniffy method")
     global start_time
     '''
     Version 1
@@ -92,7 +101,7 @@ def sniffy(mon_iface, channel):
     capture = pyshark.LiveCapture(interface = mon_iface)
     # capture.sniff(timeout=1)
     try:
-        capture.apply_on_packets(packetHandler, timeout=5)
+        capture.apply_on_packets(packetHandler, timeout=65)
     except:
         print("done capturing")
     start_time = time.time() * 1000   #get start time in milliseconds
@@ -117,12 +126,65 @@ if __name__ == "__main__":
         sys.exit()
     sniffy(sys.argv[1], int(sys.argv[2]))
     # print(src_dict)
+    # sumSRC80 = 0
+ # sumSRC68 = 0
+    # for key in src_dict.keys():
+    #     if key == "80:a5:89:ae:c6:5b":
+    #         print("---------------------",key,"---------------------")
+    #         print(src_dict[key])
+    #         for tup in src_dict[key]:
+    #             sumSRC80 += int(tup[1])
+    #     if key == "68:c4:4d:92:ac:0a":
+    #         print("---------------------",key,"---------------------")
+    #         print(src_dict[key])
+    #         for tup in src_dict[key]:
+    #             sumSRC68 += int(tup[1])
 
+    # print("*******************",sumSRC80,"*******************")
+    # print("*******************",sumSRC68,"*******************")
     
+    # sumSRC68R = refactor([('1584511350.902847449', '158'), ('1584511350.923037555', '158'), ('1584511371.744648014', '86'), ('1584511371.819352186', '154'), ('1584511372.021639118', '86')])
+
+    # print(sumSRC68R)
+
+
     for k in src_dict.keys():
         new_dict[k] = refactor(src_dict[k])
 
-    print(new_dict)
+    print("src_dict: \n", src_dict)
+    # for k in src_dict.keys():
+    #     # print(k)
+    #     if k == "80:a5:89:ae:c6:5b" or k == "68:c4:4d:92:ac:0a":
+    #         print("---------------------",k,"---------------------")
+    #         print(src_dict[k])
+           
+    print("new_dict: \n", new_dict)
+    arr1 = analysis.analysis('recording.aac')
+
+    for k in new_dict.keys():
+        # print(k)
+        # if k == "80:a5:89:ae:c6:5b" or k == "68:c4:4d:92:ac:0a":
+            # print("---------------------",k,"---------------------")
+            # print(new_dict[k])
+        # arr2 = new_dict[k]
+        barr = []
+        for k2 in new_dict[k]:
+            barr.append(new_dict[k][k2])
+            
+        new_dict[k] = barr
+        print('analyzing ', k)
+        if (len(arr1) == len(barr)) :
+            analysis.compareByteArrays(arr1, barr, 50)
+        else: 
+            print('not the same size')
+
+        sniffedIndex = k
+
+    # system call to compare two Byte Arrays
+    # get array
+    # arr1 = analysis.analysis('recording.aac')
+    
+    # analysis.compareByteArrays(arr1, arr2, 50)
 
 #Junks
 

@@ -46,7 +46,7 @@ def generate_array_of_inputs_per_windowSize(cap, inputs, analysis_time, windowSi
     """
     cap is the captured package with pyshark
     inputs is a string of either bits, 1514, or packets
-    analysis_time = 60
+    analysis_time = 60inputs
     windowSize =
     """
     window_time =  windowSize/float(1000)
@@ -121,9 +121,14 @@ def compareByteArrays(arr1: list, arr2: list, threshold: float) -> bool :
     Compares two byte arrays arr1 and arr2 and returns true if they're similar 
     considering the threshold passed
     ''' 
+    print('BEFORE NORMALIZE')
+    print(f'{arr1}\n{arr2}')
+    print()
     # normalizes the byte arrays
     norm_arr1 = normalizeArr(arr1)
     norm_arr2 = normalizeArr(arr2)
+    print('AFTER NORMALIZE')
+    print(f'{norm_arr1}\n{norm_arr2}')
 
     # compare the arrays considering the threshold (for now 1.0)
     # returns true if all byteSize in arrays are "similar"
@@ -144,8 +149,9 @@ def analysis(filename: str):
     #     array1 = binary_file.read()  # Read the whole file at once
 
     array1 = generate_array_of_byte_in_video(filename) # attacker package
-    
-
+    print(array1) 
+    print('length of the array: ', len(array1))
+    return array1
     # cap1 = pyshark.FileCapture(filename,only_summaries=True,keep_packets = False)
     # cap1.set_debug()
     # array1 = generate_array_of_inputs_per_windowSize2(cap1) # protector wav
@@ -154,8 +160,8 @@ def analysis(filename: str):
     # testFile = open('livecap.pcap', 'r') # hardcoded -- sniffed text file
     # array2 = str.encode(testFile.read()) # converts to byte array
     # testFile.close()
-
     
+    '''
     cap = pyshark.FileCapture('livecap.pcap', only_summaries=True, keep_packets = False)
     for packet in cap:
         ip = packet.source
@@ -173,13 +179,13 @@ def analysis(filename: str):
         else:
             print("Analysis: Not similar")
             print(ip + "is not a spy")
-
-
+    '''
     # Compares two byte arrays and determine whether they're similar
     
 
 if __name__ == '__main__':
     analysis(sys.argv[1])
+
 
 
 

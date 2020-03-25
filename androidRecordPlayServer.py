@@ -6,6 +6,7 @@ import datetime
 import os, pyshark
 import math
 from time import sleep
+import sniffsniff
 
 '''
 server file
@@ -127,8 +128,9 @@ def on_start_collection():
 
     pid = os.fork()
     if (pid == 0):
-        os.execlp('python', 'python', 'sniffsniff.py', '')
-
+        # os.execlp('/home/sensor/anaconda3/bin/python', 'python', 'sniffsniff.py', 'wlp4s0mon', '6')
+        # os.system('startSniff 1')
+        os.system('sudo /home/sensor/anaconda3/bin/python sniffsniff.py wlp4s0mon 6')
     else:    
         emit('start sniffing', room = 'sniffer') # send broadcast to sniffer
         
@@ -140,7 +142,7 @@ def on_start_collection():
         print('recording')
         emit('start play', room='player')
         print('playing')
-        os.mkdir('recordings_' + timeStamp) # make directory for this experiment
+        # os.mkdir('recordings_' + timeStamp) # make directory for this experiment
         
 
 @socketio.on('stop collection')
@@ -169,19 +171,22 @@ def convert_file_to_wav(byteArr, deviceName):
     '''
     
     global timeStamp
+    print('converting to audio file')
     # fileName = deviceName.split(".")[0] +".wav"
     # saves in a directory for this experiment
     # filePath = "recordings_" + timeStamp + '/' + fileName
     # print(filePath)
-    fileName = 'recording.wav'
+    fileName = 'recording.aac'
     with open(fileName, "wb") as binary_file:
         # Write text or bytes to the file
         binary_file.write("".encode('utf8')) 
         num_bytes_written = binary_file.write(byteArr)
     print("Wrote %d bytes." % num_bytes_written)
-    
+
+    # new_dict = {}
+    # with open('new_dict.txt') as f:
+
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, host='0.0.0.0', port=8090) 
     #0.0.0.0 means listening to any device that submits to that port
-
