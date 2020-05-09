@@ -130,18 +130,20 @@ def on_start_collection():
     if (pid == 0):
         # os.execlp('/home/sensor/anaconda3/bin/python', 'python', 'sniffsniff.py', 'wlp4s0mon', '6')
         # os.system('startSniff 1')
-        os.system('sudo /home/sensor/anaconda3/bin/python sniffsniff.py wlp4s0mon 6')
-    else:    
-        emit('start sniffing', room = 'sniffer') # send broadcast to sniffer
+        # os.system('sudo /home/sensor/anaconda3/bin/python sniffsniff.py wlp4s0mon 6')
+        os.system('sudo tshark -a duration:60 -w test1.pcap')
         
-        dt_obj= datetime.datetime.now() # when the experiment is started
-        global timeStamp
-        timeStamp = str(dt_obj.year) + '_' + str(dt_obj.month) + '_' + str(dt_obj.day) + '_' + str(dt_obj.hour) + '_' + str(dt_obj.minute) + '_' + str(dt_obj.second)
+    else:    
+        # emit('start sniffing', room = 'sniffer') # send broadcast to sniffer
+        
+        # dt_obj= datetime.datetime.now() # when the experiment is started
+        # global timeStamp
+        # timeStamp = str(dt_obj.year) + '_' + str(dt_obj.month) + '_' + str(dt_obj.day) + '_' + str(dt_obj.hour) + '_' + str(dt_obj.minute) + '_' + str(dt_obj.second)
         print('data collection started')
         emit('start record', room='recorder')
         print('recording')
-        emit('start play', room='player')
-        print('playing')
+        # emit('start play', room='player')
+        # print('playing')
         # os.mkdir('recordings_' + timeStamp) # make directory for this experiment
         
 
