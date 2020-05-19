@@ -141,8 +141,10 @@ def on_start_collection():
         # timeStamp = str(dt_obj.year) + '_' + str(dt_obj.month) + '_' + str(dt_obj.day) + '_' + str(dt_obj.hour) + '_' + str(dt_obj.minute) + '_' + str(dt_obj.second)
         print('data collection started')
         emit('start record', room='recorder')
-        print('recording')
+        print('started recording')
         os.wait()
+        emit('stop record', room='recorder')
+        print('stopped recording')
         # emit('start play', room='player')
         # print('playing')
         # os.mkdir('recordings_' + timeStamp) # make directory for this experiment

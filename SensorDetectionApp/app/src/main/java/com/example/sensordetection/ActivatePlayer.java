@@ -27,26 +27,26 @@ public class ActivatePlayer extends AppCompatActivity {
         SensorApplication app = (SensorApplication) getApplication();   //get app
         mSocket = app.getSocket();      //get socket
 
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mSocket.emit("stop collection");
-            }
-        }, 55000);
+//        final Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                mSocket.emit("stop collection");
+//            }
+//        }, 55000);
     }
 
     //this function is connected to the 'Play' button
     public void play(View v) {
         if (player == null) {
             player = MediaPlayer.create(this, R.raw.song); // initialize media player
-            player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) { //i don't know what this does tbh
-                    stopPlayer();
-                    mSocket.emit("stop collection");
-                }
-            });
+//            player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+//                @Override
+//                public void onCompletion(MediaPlayer mp) { //i don't know what this does tbh
+//                    stopPlayer();
+//                    mSocket.emit("stop collection");
+//                }
+//            });
         }
         player.start();
     }
@@ -59,11 +59,11 @@ public class ActivatePlayer extends AppCompatActivity {
     }
 
     //this function is connected to the 'Stop' button
-    public void stop(View v) {
-        stopPlayer();
-        mSocket.emit("stop collection");
-        finish();
-    }
+//    public void stop(View v) {
+//        stopPlayer();
+//        mSocket.emit("stop collection");
+//        finish();
+//    }
 
     //this function stops the whole process; recording audio in other phones
     private void stopPlayer() {
