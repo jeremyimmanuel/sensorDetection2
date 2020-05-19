@@ -142,19 +142,20 @@ def on_start_collection():
         print('data collection started')
         emit('start record', room='recorder')
         print('recording')
+        os.wait()
         # emit('start play', room='player')
         # print('playing')
         # os.mkdir('recordings_' + timeStamp) # make directory for this experiment
         
 
-@socketio.on('stop collection')
-def on_stop_collection():
-    '''
-    receives a 'stop collection' event from android device and stops recording
-    on all of connected recorder devices
-    '''
-    emit('stop record', room='recorder')
-    print('stop recording')
+# @socketio.on('stop collection')
+# def on_stop_collection():
+#     '''
+#     receives a 'stop collection' event from android device and stops recording
+#     on all of connected recorder devices
+#     '''
+#     emit('stop record', room='recorder')
+#     print('stop recording')
 
     
 # hey Brent! -from Anwar, Jeremy, Donghee & Jun :D
@@ -185,8 +186,9 @@ def convert_file_to_wav(byteArr, deviceName):
         num_bytes_written = binary_file.write(byteArr)
     print("Wrote %d bytes." % num_bytes_written)
 
-    # new_dict = {}
-    # with open('new_dict.txt') as f:
+    print("Running analysis")
+    os.system('analysis.py')
+
 
 
 if __name__ == '__main__':
